@@ -1,0 +1,29 @@
+<!doctype html>
+<title>Evaluador HU</title>
+<h2>Evaluar Historia de Usuario</h2>
+<form method="post">
+  Descripción:<br><textarea name="descripcion" rows="3" cols="60"></textarea><br>
+  Técnica: <input type="number" name="tecnica"><br>
+  Desarrollo: <input type="number" name="desarrollo"><br>
+  Dependencias: <input type="number" name="dependencias"><br>
+  Claridad: <input type="number" name="claridad"><br>
+  Riesgos: <input type="number" name="riesgos"><br>
+  <input type="submit" value="Evaluar">
+</form>
+<a href="/pivote">Editar historia pivote</a>
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul>{% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}</ul>
+  {% endif %}
+{% endwith %}
+<h3>Historial de Evaluaciones</h3>
+<table border="1">
+<tr><th>Descripción</th><th>Total</th><th>Fibonacci</th><th>Recomendación</th><th>Fecha</th></tr>
+{% for h in historial %}
+<tr>
+  <td>{{ h[1] }}</td><td>{{ h[6] }}</td><td>{{ h[7] }}</td><td>{{ h[8] }}</td><td>{{ h[9] }}</td>
+</tr>
+{% endfor %}
+</table>

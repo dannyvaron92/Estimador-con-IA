@@ -1,0 +1,31 @@
+<!doctype html>
+<title>Historia Pivote</title>
+<h2>Actualizar Historia Pivote</h2>
+<form method="post">
+  Descripción:<br><textarea name="descripcion" rows="3" cols="60"></textarea><br>
+  Técnica: <input type="number" name="tecnica"><br>
+  Desarrollo: <input type="number" name="desarrollo"><br>
+  Dependencias: <input type="number" name="dependencias"><br>
+  Claridad: <input type="number" name="claridad"><br>
+  Riesgos: <input type="number" name="riesgos"><br>
+  <input type="submit" value="Guardar pivote">
+</form>
+<a href="/">Volver</a>
+{% if pivote %}
+<h3>Historia Pivote Actual</h3>
+<ul>
+  <li><strong>Descripción:</strong> {{ pivote[1] }}</li>
+  <li><strong>Técnica:</strong> {{ pivote[2] }}</li>
+  <li><strong>Desarrollo:</strong> {{ pivote[3] }}</li>
+  <li><strong>Dependencias:</strong> {{ pivote[4] }}</li>
+  <li><strong>Claridad:</strong> {{ pivote[5] }}</li>
+  <li><strong>Riesgos:</strong> {{ pivote[6] }}</li>
+</ul>
+{% endif %}
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul>{% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}</ul>
+  {% endif %}
+{% endwith %}
