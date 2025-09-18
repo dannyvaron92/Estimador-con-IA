@@ -50,6 +50,7 @@ def index():
         claridad = int(request.form['claridad'])
         riesgos = int(request.form['riesgos'])
 
+        claridad_mod = (claridad - 5) * -1
         total = tecnica + desarrollo + dependencias + claridad + riesgos
         fib_valor = redondear_fibonacci(total)
         recomendacion = obtener_recomendacion(fib_valor)
