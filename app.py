@@ -1,10 +1,9 @@
 import os
 import sqlite3
-from flask import Flask, render_template, request, redirect, flash
-from recomendador import recomendar_con_ia
+from flask import Flask, render_template, request, redirect
+from recomendador import redondear_fibonacci, obtener_recomendacion, recomendar_con_ia
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'
 DB_NAME = 'hu_evaluations.db'
 
 def init_db():
@@ -22,12 +21,13 @@ def init_db():
         "total INTEGER,"
         "fibonacci INTEGER,"
         "recomendacion TEXT,"
+        "analisis TEXT,"
         "fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
     )
     cursor.execute(
-        "CREATE TABLE IF NOT EXISTS hu_pivote ("
+        "CREATE TABLE IF NOT EXISTS pivote ("
         "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-        "descripcion TEXT,"
+        "hu TEXT,"
         "tecnica INTEGER,"
         "desarrollo INTEGER,"
         "dependencias INTEGER,"
@@ -44,46 +44,36 @@ init_db()
 def index():
     if request.method == 'POST':
         descripcion = request.form['descripcion']
-        try:
-            tecnica = int(request.form['tecnica'])
-            desarrollo = int(request.form['desarrollo'])
-            dependencias = int(request.form['dependencias'])
-            claridad = int(request.form['claridad'])
-            riesgos = int(request.form['riesgos'])
-        except ValueError:
-            flash("Todos los criterios deben ser valores numéricos.")
-            return redirect('/')
-
-        conn = sqlite3.connect(DB_NAME)
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM hu_pivote ORDER BY fecha DESC LIMIT 1")
-        pivote = cursor.fetchone()
-        conn.close()
-
-        if not pivote:
-            flash("No hay historia pivote definida. Por favor ingresa una primero.")
-            return redirect('/')
-
-        recomendacion = recomendar_con_ia(
-            descripcion, tecnica, desarrollo, dependencias, claridad, riesgos, pivote
-        )
+        tecnica = int(request.form['tecnica'])
+        desarrollo = int(request.form['desarrollo'])
+        dependencias = int(request.form['dependencias'])
+        claridad = int(request.form['claridad'])
+        riesgos = int(request.form['riesgos'])
 
         total = tecnica + desarrollo + dependencias + claridad + riesgos
-        fibonacci = min([0, 1, 2, 3, 5, 8, 13, 21], key=lambda x: abs(x - total))
+        fib_valor = redondear_fibonacci(total)
+        recomendacion = obtener_recomendacion(fib_valor)
 
         conn = sqlite3.connect(DB_NAME)
         cursor = conn.cursor()
+        cursor.execute("SELECT hu, tecnica, desarrollo, dependencias, claridad, riesgos FROM pivote ORDER BY fecha DESC LIMIT 1")
+        pivote = cursor.fetchone()
+        if pivote:
+            hu_pivote, t_p, d_p, dep_p, c_p, r_p = pivote
+            analisis = recomendar_con_ia(descripcion, tecnica, desarrollo, dependencias, claridad, riesgos,
+                                         hu_pivote, t_p, d_p, dep_p, c_p, r_p)
+        else:
+            analisis = "No hay historia pivote definida para comparar."
+
         cursor.execute(
-            "INSERT INTO evaluations (description, tecnica, desarrollo, dependencias, claridad, riesgos, total, fibonacci, recomendacion) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            (descripcion, tecnica, desarrollo, dependencias, claridad, riesgos, total, fibonacci, recomendacion)
+            "INSERT INTO evaluations (description, tecnica, desarrollo, dependencias, claridad, riesgos, total, fibonacci, recomendacion, analisis) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (descripcion, tecnica, desarrollo, dependencias, claridad, riesgos, total, fib_valor, recomendacion, analisis)
         )
         conn.commit()
-        cursor.execute('SELECT * FROM evaluations ORDER BY fecha DESC')
-        historial = cursor.fetchall()
         conn.close()
-        flash("Historia evaluada exitosamente.")
-        return render_template('index.html', historial=historial)
+
+        return redirect('/')
 
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
@@ -95,35 +85,27 @@ def index():
 @app.route('/pivote', methods=['GET', 'POST'])
 def pivote():
     if request.method == 'POST':
-        descripcion = request.form['descripcion']
-        try:
-            tecnica = int(request.form['tecnica'])
-            desarrollo = int(request.form['desarrollo'])
-            dependencias = int(request.form['dependencias'])
-            claridad = int(request.form['claridad'])
-            riesgos = int(request.form['riesgos'])
-        except ValueError:
-            flash("Todos los criterios deben ser valores numéricos.")
-            return redirect('/pivote')
+        hu = request.form['hu']
+        tecnica = int(request.form['tecnica'])
+        desarrollo = int(request.form['desarrollo'])
+        dependencias = int(request.form['dependencias'])
+        claridad = int(request.form['claridad'])
+        riesgos = int(request.form['riesgos'])
 
         conn = sqlite3.connect(DB_NAME)
         cursor = conn.cursor()
-        cursor.execute(
-            "INSERT INTO hu_pivote (descripcion, tecnica, desarrollo, dependencias, claridad, riesgos) "
-            "VALUES (?, ?, ?, ?, ?, ?)",
-            (descripcion, tecnica, desarrollo, dependencias, claridad, riesgos)
-        )
+        cursor.execute("INSERT INTO pivote (hu, tecnica, desarrollo, dependencias, claridad, riesgos) VALUES (?, ?, ?, ?, ?, ?)",
+                       (hu, tecnica, desarrollo, dependencias, claridad, riesgos))
         conn.commit()
         conn.close()
-        flash("Historia pivote actualizada correctamente.")
         return redirect('/pivote')
 
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM hu_pivote ORDER BY fecha DESC LIMIT 1")
-    pivote_actual = cursor.fetchone()
+    cursor.execute("SELECT * FROM pivote ORDER BY fecha DESC")
+    pivotes = cursor.fetchall()
     conn.close()
-    return render_template('pivote.html', pivote=pivote_actual)
+    return render_template('pivote.html', pivotes=pivotes)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))

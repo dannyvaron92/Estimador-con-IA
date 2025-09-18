@@ -1,11 +1,28 @@
-def recomendar_con_ia(descripcion, tecnica, desarrollo, dependencias, claridad, riesgos, pivote):
-    puntaje_actual = tecnica + desarrollo + dependencias + claridad + riesgos
-    puntaje_pivote = pivote[2] + pivote[3] + pivote[4] + pivote[5] + pivote[6]
-    diferencia = abs(puntaje_actual - puntaje_pivote)
+from difflib import SequenceMatcher
 
-    if diferencia <= 2:
-        return "✅ Historia similar a la pivote. Aceptable."
-    elif diferencia <= 5:
-        return "⚠️ Historia algo diferente. Considera revisar dependencias o claridad."
+FIBONACCI = [0, 1, 2, 3, 5, 8, 13, 21]
+
+def redondear_fibonacci(valor):
+    return min(FIBONACCI, key=lambda x: abs(x - valor))
+
+def obtener_recomendacion(fib_valor):
+    if fib_valor <= 8:
+        return "✅ Historia aceptable."
+    elif fib_valor < 13 and fib_valor > 8:
+        return "⚠️ Considera dividir o refinar la historia."
     else:
-        return "❌ Historia muy distinta a la pivote. Recomendamos dividirla o redefinirla."
+        return "❌ División recomendada."
+
+def recomendar_con_ia(hu, tecnica, desarrollo, dependencias, claridad, riesgos,
+                      hu_pivote, t_p, d_p, dep_p, c_p, r_p):
+    similitud = SequenceMatcher(None, hu, hu_pivote).ratio()
+    diferencia_puntaje = abs((tecnica + desarrollo + dependencias + claridad + riesgos) -
+                             (t_p + d_p + dep_p + c_p + r_p))
+    analisis = f"Similitud textual: {similitud:.2f}. "
+    if similitud > 0.7 and diferencia_puntaje <= 3:
+        analisis += "La historia parece estar correctamente puntuada."
+    elif similitud > 0.7:
+        analisis += "La historia es similar pero el puntaje difiere significativamente."
+    else:
+        analisis += "La historia es diferente a la pivote, se recomienda revisión."
+    return analisis[:200]

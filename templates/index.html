@@ -1,29 +1,38 @@
 <!doctype html>
-<title>Evaluador HU</title>
-<h2>Evaluar Historia de Usuario</h2>
-<form method="post">
-  Descripción:<br><textarea name="descripcion" rows="3" cols="60"></textarea><br>
-  Técnica: <input type="number" name="tecnica"><br>
-  Desarrollo: <input type="number" name="desarrollo"><br>
-  Dependencias: <input type="number" name="dependencias"><br>
-  Claridad: <input type="number" name="claridad"><br>
-  Riesgos: <input type="number" name="riesgos"><br>
-  <input type="submit" value="Evaluar">
-</form>
-<a href="/pivote">Editar historia pivote</a>
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul>{% for message in messages %}
-      <li>{{ message }}</li>
-    {% endfor %}</ul>
-  {% endif %}
-{% endwith %}
-<h3>Historial de Evaluaciones</h3>
-<table border="1">
-<tr><th>Descripción</th><th>Total</th><th>Fibonacci</th><th>Recomendación</th><th>Fecha</th></tr>
-{% for h in historial %}
-<tr>
-  <td>{{ h[1] }}</td><td>{{ h[6] }}</td><td>{{ h[7] }}</td><td>{{ h[8] }}</td><td>{{ h[9] }}</td>
-</tr>
-{% endfor %}
-</table>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Evaluador HU</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container mt-4">
+  <h1>Evaluador de Historia de Usuario</h1>
+  <form method="post" class="mb-4">
+    <div class="mb-3"><textarea name="descripcion" class="form-control" placeholder="Historia de usuario" required></textarea></div>
+    <div class="row">
+      <div class="col"><input type="number" name="tecnica" class="form-control" placeholder="Técnica" required></div>
+      <div class="col"><input type="number" name="desarrollo" class="form-control" placeholder="Desarrollo" required></div>
+      <div class="col"><input type="number" name="dependencias" class="form-control" placeholder="Dependencias" required></div>
+      <div class="col"><input type="number" name="claridad" class="form-control" placeholder="Claridad" required></div>
+      <div class="col"><input type="number" name="riesgos" class="form-control" placeholder="Riesgos" required></div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Evaluar</button>
+    <a href="/pivote" class="btn btn-secondary mt-3">Configurar historia pivote</a>
+  </form>
+  <h2>Historial de Evaluaciones</h2>
+  <table class="table table-bordered">
+    <thead><tr><th>HU</th><th>Fibonacci</th><th>Recomendación</th><th>Análisis IA</th><th>Fecha</th></tr></thead>
+    <tbody>
+      {% for h in historial %}
+      <tr>
+        <td>{{ h[1] }}</td>
+        <td>{{ h[8] }}</td>
+        <td>{{ h[9] }}</td>
+        <td>{{ h[10] }}</td>
+        <td>{{ h[11] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

@@ -1,31 +1,40 @@
 <!doctype html>
-<title>Historia Pivote</title>
-<h2>Actualizar Historia Pivote</h2>
-<form method="post">
-  Descripción:<br><textarea name="descripcion" rows="3" cols="60"></textarea><br>
-  Técnica: <input type="number" name="tecnica"><br>
-  Desarrollo: <input type="number" name="desarrollo"><br>
-  Dependencias: <input type="number" name="dependencias"><br>
-  Claridad: <input type="number" name="claridad"><br>
-  Riesgos: <input type="number" name="riesgos"><br>
-  <input type="submit" value="Guardar pivote">
-</form>
-<a href="/">Volver</a>
-{% if pivote %}
-<h3>Historia Pivote Actual</h3>
-<ul>
-  <li><strong>Descripción:</strong> {{ pivote[1] }}</li>
-  <li><strong>Técnica:</strong> {{ pivote[2] }}</li>
-  <li><strong>Desarrollo:</strong> {{ pivote[3] }}</li>
-  <li><strong>Dependencias:</strong> {{ pivote[4] }}</li>
-  <li><strong>Claridad:</strong> {{ pivote[5] }}</li>
-  <li><strong>Riesgos:</strong> {{ pivote[6] }}</li>
-</ul>
-{% endif %}
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul>{% for message in messages %}
-      <li>{{ message }}</li>
-    {% endfor %}</ul>
-  {% endif %}
-{% endwith %}
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Historia Pivote</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container mt-4">
+  <h1>Configurar Historia Pivote</h1>
+  <form method="post" class="mb-4">
+    <div class="mb-3"><textarea name="hu" class="form-control" placeholder="Historia pivote" required></textarea></div>
+    <div class="row">
+      <div class="col"><input type="number" name="tecnica" class="form-control" placeholder="Técnica" required></div>
+      <div class="col"><input type="number" name="desarrollo" class="form-control" placeholder="Desarrollo" required></div>
+      <div class="col"><input type="number" name="dependencias" class="form-control" placeholder="Dependencias" required></div>
+      <div class="col"><input type="number" name="claridad" class="form-control" placeholder="Claridad" required></div>
+      <div class="col"><input type="number" name="riesgos" class="form-control" placeholder="Riesgos" required></div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Guardar pivote</button>
+    <a href="/" class="btn btn-secondary mt-3">Volver</a>
+  </form>
+  <h2>Historias Pivote Guardadas</h2>
+  <table class="table table-bordered">
+    <thead><tr><th>HU</th><th>Técnica</th><th>Desarrollo</th><th>Dependencias</th><th>Claridad</th><th>Riesgos</th><th>Fecha</th></tr></thead>
+    <tbody>
+      {% for p in pivotes %}
+      <tr>
+        <td>{{ p[1] }}</td>
+        <td>{{ p[2] }}</td>
+        <td>{{ p[3] }}</td>
+        <td>{{ p[4] }}</td>
+        <td>{{ p[5] }}</td>
+        <td>{{ p[6] }}</td>
+        <td>{{ p[7] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>
