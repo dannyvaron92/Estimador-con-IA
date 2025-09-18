@@ -1,5 +1,3 @@
-from difflib import SequenceMatcher
-
 FIBONACCI = [0, 1, 2, 3, 5, 8, 13, 21]
 
 def redondear_fibonacci(valor):
@@ -8,21 +6,38 @@ def redondear_fibonacci(valor):
 def obtener_recomendacion(fib_valor):
     if fib_valor <= 8:
         return "✅ Historia aceptable."
-    elif fib_valor < 13 and fib_valor > 8:
+    elif fib_valor <= 13:
         return "⚠️ Considera dividir o refinar la historia."
     else:
         return "❌ División recomendada."
 
-def recomendar_con_ia(hu, tecnica, desarrollo, dependencias, claridad, riesgos,
-                      hu_pivote, t_p, d_p, dep_p, c_p, r_p):
-    similitud = SequenceMatcher(None, hu, hu_pivote).ratio()
-    diferencia_puntaje = abs((tecnica + desarrollo + dependencias + claridad + riesgos) -
-                             (t_p + d_p + dep_p + c_p + r_p))
-    analisis = f"Similitud textual: {similitud:.2f}. "
-    if similitud > 0.7 and diferencia_puntaje <= 3:
-        analisis += "La historia parece estar correctamente puntuada."
-    elif similitud > 0.7:
-        analisis += "La historia es similar pero el puntaje difiere significativamente."
+def recomendar_con_ia(descripcion, tecnica, desarrollo, dependencias, claridad, riesgos, pivote):
+    if not pivote:
+        return "No hay historia pivote definida para comparar."
+
+    diferencias = []
+    if tecnica != pivote['tecnica']:
+        diferencias.append("Técnica diferente")
+    if desarrollo != pivote['desarrollo']:
+        diferencias.append("Desarrollo diferente")
+    if dependencias != pivote['dependencias']:
+        diferencias.append("Dependencias distintas")
+    if claridad != pivote['claridad']:
+        diferencias.append("Claridad distinta")
+    if riesgos != pivote['riesgos']:
+        diferencias.append("Riesgos distintos")
+
+    texto = f"Comparando con la historia pivote: {', '.join(diferencias)}. "
+    if len(descripcion) < 50:
+        texto += "La descripción es muy breve. "
+    elif len(descripcion) > 300:
+        texto += "La descripción es extensa. "
     else:
-        analisis += "La historia es diferente a la pivote, se recomienda revisión."
-    return analisis[:200]
+        texto += "La descripción tiene una longitud adecuada. "
+
+    if len(diferencias) == 0:
+        texto += "La historia parece estar correctamente punteada."
+    else:
+        texto += "Revisa los criterios que difieren de la historia pivote."
+
+    return texto[:200]
