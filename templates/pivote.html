@@ -10,11 +10,11 @@
   <form method="post" class="mb-4">
     <div class="mb-3"><textarea name="hu" class="form-control" placeholder="Historia pivote" required></textarea></div>
     <div class="row">
-      <div class="col"><input type="number" name="tecnica" class="form-control" placeholder="Técnica" required></div>
-      <div class="col"><input type="number" name="desarrollo" class="form-control" placeholder="Desarrollo" required></div>
-      <div class="col"><input type="number" name="dependencias" class="form-control" placeholder="Dependencias" required></div>
-      <div class="col"><input type="number" name="claridad" class="form-control" placeholder="Claridad" required></div>
-      <div class="col"><input type="number" name="riesgos" class="form-control" placeholder="Riesgos" required></div>
+      <div class="col"><input type="number" name="tecnica" min="0" max="3" class="form-control" placeholder="Técnica" required></div>
+      <div class="col"><input type="number" name="desarrollo" min="0" max="3" class="form-control" placeholder="Desarrollo" required></div>
+      <div class="col"><input type="number" name="dependencias" min="0" max="3" class="form-control" placeholder="Dependencias" required></div>
+      <div class="col"><input type="number" name="claridad" min="0" max="3" class="form-control" placeholder="Claridad" required></div>
+      <div class="col"><input type="number" name="riesgos" min="0" max="3" class="form-control" placeholder="Riesgos" required></div>
     </div>
     <button type="submit" class="btn btn-primary mt-3">Guardar pivote</button>
     <a href="/" class="btn btn-secondary mt-3">Volver</a>
